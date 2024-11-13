@@ -2,8 +2,13 @@ NAME		:=	libasm.a
 TESTER		:=	tester
 INCLUDE		:=	include
 SRC_DIR		:=	src
-SRC_FILES	:=	ft_write.s \
-				ft_read.s
+SRC_FILES	:=	ft_write.s	\
+				ft_read.s	\
+				ft_strcpy.s	\
+				ft_strcmp.s	\
+				ft_strlen.s	\
+				ft_strdup.s
+
 SRC_PATH	:=	$(addprefix $(SRC_DIR)/, $(SRC_FILES))
 
 OBJ_DIR		:=	build
@@ -23,7 +28,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.s include/libasm.h
 
 test: $(NAME) test.c
 	@echo "Compiling: $<"
-	$(CC) -g test.c -I $(INCLUDE) -o $(TESTER) $(NAME)
+	$(CC) -g test.c -I $(INCLUDE) -o $(TESTER) $(NAME) -g -fsanitize=address
 	@echo "Running tester"
 	@./$(TESTER)
 

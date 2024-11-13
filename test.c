@@ -126,10 +126,109 @@ void test_read()
 	}
 }
 
+void test_strcpy()
+{
+	// test regular string
+	{
+		const char *src = TEST_STRING;
+		char dest[sizeof(TEST_STRING)];
+		char *ret = NULL;
+
+		ret = ft_strcpy(dest, src);
+		assert(ret == dest);
+		assert(strcmp(dest, src) == 0);
+	}
+
+	// test empty string
+	{
+		const char *src = "";
+		char dest[10];
+		char *ret = NULL;
+
+		ret = ft_strcpy(dest, src);
+		assert(ret == dest);
+		assert(strcmp(dest, src) == 0);
+	}
+
+	printf(GREEN "strcpy test successful" RESET "\n\n");
+}
+
+void test_strcmp()
+{
+	// test strings equal
+	{
+		const char *s1 = TEST_STRING;
+		const char *s2 = TEST_STRING;
+
+		assert(ft_strcmp(s1, s2) == 0 && strcmp(s1, s2) == 0);
+	}
+
+	// test strings not equal negative
+	{
+		const char *s1 = TEST_STRING;
+		const char *s2 = "hello woold\n";
+
+		assert(ft_strcmp(s1, s2) < 0 && strcmp(s1, s2) < 0);
+	}
+
+	// test strings not equal positive
+	{
+		const char *s1 = "Hello world?\n";
+		const char *s2 = TEST_STRING;
+
+		assert(ft_strcmp(s1, s2) > 0 && strcmp(s1, s2) > 0);
+	}
+
+	printf(GREEN "strcmp test successful" RESET "\n\n");
+}
+
+void test_strlen()
+{
+	// test regular string
+	{
+		assert(ft_strlen(TEST_STRING) == strlen(TEST_STRING));
+	}
+
+	// test empty string
+	{
+		assert(ft_strlen("") == strlen(""));
+	}
+
+	printf(GREEN "strlen test successful" RESET "\n\n");
+}
+
+void test_strdup()
+{
+	// test regular string
+	{
+		char *strLibAsm = ft_strdup(TEST_STRING);
+		char *strLibC = strdup(TEST_STRING);
+
+		assert(strcmp(strLibAsm, strLibC) == 0);
+		free(strLibAsm);
+		free(strLibC);
+	}
+
+	// test empty string
+	{
+		char *strLibAsm = ft_strdup("");
+		char *strLibC = strdup("");
+
+		assert(strcmp(strLibAsm, strLibC) == 0);
+		free(strLibAsm);
+		free(strLibC);
+	}
+
+	printf(GREEN "strdup test successful" RESET "\n\n");
+}
+
 int main()
 {
 	test_write();
 	test_read();
-
+	test_strcpy();
+	test_strcmp();
+	test_strlen();
+	test_strdup();
 	return 0;
 }
