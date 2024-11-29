@@ -28,7 +28,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.s include/libasm.h
 
 test: $(NAME) test.c
 	@echo "Compiling: $<"
-	$(CC) -g test.c -I $(INCLUDE) -o $(TESTER) $(NAME) -g -fsanitize=address
+	$(CC) -g test.c -I $(INCLUDE) -o $(TESTER) $(NAME)
 	@echo "Running tester"
 	@./$(TESTER)
 

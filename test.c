@@ -14,8 +14,10 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <fcntl.h>
+#include <time.h>
 
 #define TEST_STRING "Hello World!\n"
+#define REALLY_LONG_STRING_SIZE (100 * 1024 * 1024)
 #define RESET       "\x1b[0m"
 #define BLACK       "\x1b[30m"
 #define RED         "\x1b[31m"
@@ -192,6 +194,49 @@ void test_strlen()
 	// test empty string
 	{
 		assert(ft_strlen("") == strlen(""));
+	}
+
+	// test regular string
+	{
+		assert(ft_strlen_optimized(TEST_STRING) == strlen(TEST_STRING));
+	}
+
+	// test empty string
+	{
+		assert(ft_strlen_optimized("") == strlen(""));
+	}
+
+	// test speed difference
+	{
+		clock_t start_time, end_time;
+
+		char *really_long_string = malloc(REALLY_LONG_STRING_SIZE + 1);
+		memset(really_long_string, 'R', REALLY_LONG_STRING_SIZE);
+		really_long_string[REALLY_LONG_STRING_SIZE] = '\0';
+
+		start_time = clock();
+		ssize_t sizeLibC = strlen(really_long_string);
+		end_time = clock();
+		double time_taken_libC = ((double)(end_time - start_time)) / CLOCKS_PER_SEC;
+
+		start_time = clock();
+		ssize_t sizeLibAsm = ft_strlen(really_long_string);
+		end_time = clock();
+		double time_taken_libAsm = ((double)(end_time - start_time)) / CLOCKS_PER_SEC;
+
+		start_time = clock();
+		ssize_t sizeLibAsm_optimized = ft_strlen_optimized(really_long_string);
+		end_time = clock();
+		double time_taken_libAsm_optimized = ((double)(end_time - start_time)) / CLOCKS_PER_SEC;
+
+		free(really_long_string);
+
+		assert(sizeLibAsm == sizeLibC && sizeLibAsm == sizeLibAsm_optimized);
+		printf("Benchmarking strlen:\n"
+				"LibC: %f\n"
+				"LibAsm (unoptimized): %f\n"
+				"LibAsm (optimized): %f\n"
+				"\n", time_taken_libC, time_taken_libAsm, time_taken_libAsm_optimized);
 	}
 
 	printf(GREEN "strlen test successful" RESET "\n\n");
