@@ -7,7 +7,8 @@ SRC_FILES	:=	ft_write.s	\
 				ft_strcpy.s	\
 				ft_strcmp.s	\
 				ft_strlen.s	\
-				ft_strdup.s
+				ft_strdup.s	\
+				ft_list_size.s
 
 SRC_PATH	:=	$(addprefix $(SRC_DIR)/, $(SRC_FILES))
 

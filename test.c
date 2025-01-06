@@ -38,6 +38,31 @@ int test_syscall(int ret, char *str)
 	return ret;
 }
 
+t_list*	create_list(size_t size)
+{
+	t_list* listHead = NULL;
+	t_list* current = NULL;
+	size_t	i = 0;
+
+	while (i != size)
+	{
+		if (!listHead)
+		{
+			listHead = malloc(sizeof(t_list));
+			current = listHead;
+		}
+		else
+		{
+			current->next = malloc(sizeof(t_list));
+			current = current->next;
+		}
+		current->data = NULL;
+		current->next = NULL;
+		i++;
+	}
+	return (listHead);
+}
+
 void test_write()
 {
 	printf(CYAN "Testing write\n" RESET);
@@ -267,6 +292,19 @@ void test_strdup()
 	printf(GREEN "strdup test successful" RESET "\n\n");
 }
 
+void test_list_size()
+{
+	t_list* list_20 = create_list(20);
+	t_list* list_10 = create_list(10);
+	t_list* list_0 = create_list(0);
+
+	assert(ft_list_size(list_20) == 20);
+	assert(ft_list_size(list_10) == 10);
+	assert(ft_list_size(list_0) == 0);
+
+	printf(GREEN "list_size test successful" RESET "\n\n");
+}
+
 int main()
 {
 	test_write();
@@ -275,5 +313,6 @@ int main()
 	test_strcmp();
 	test_strlen();
 	test_strdup();
+	test_list_size();
 	return 0;
 }
