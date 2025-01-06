@@ -24,7 +24,7 @@ ft_write:
 .error:
 	mov r12, rax ; temp store value in the r12 register
 	neg r12 ; invert the return value of the syscall to get the correct errno
-	call __errno_location
+	call __errno_location wrt ..plt
 	mov [rax], r12 ; store the value inside errno
 	mov rax, -1 ; return -1
 	pop r12 ; restore r12 to the caller's value

@@ -6,7 +6,7 @@
 ;  888       o  888   888    .88P  .8'     `888.  oo     .d8P  8    Y     888  
 ; o888ooooood8 o888o o888bood8P'  o88o     o8888o 8""88888P'  o8o        o888o 
 
-BITS64
+BITS 64
 global ft_strdup
 extern malloc
 extern ft_strlen
@@ -20,7 +20,7 @@ ft_strdup:; rdi: str
     call ft_strlen
     inc rax
     mov rdi, rax ; set strlen + 1 as the argument for malloc
-    call malloc
+    call malloc wrt ..plt
     test rax, rax
     jz .end
     mov rdi, rax ; set the newly allocated memory inside the dest

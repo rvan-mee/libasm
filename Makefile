@@ -18,8 +18,8 @@ OBJ_PATH	:=	$(addprefix $(OBJ_DIR)/, $(OBJ_FILES))
 all: $(NAME)
 
 $(NAME): $(OBJ_PATH)
-	rm -f $@
-	ar rcs $@ $(OBJ_PATH)
+	@rm -f $@
+	@ar rcs $@ $(OBJ_PATH)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.s include/libasm.h
 	@mkdir -p $(@D)
@@ -27,17 +27,20 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.s include/libasm.h
 	@nasm $< -o $@ -f elf64 -g
 
 test: $(NAME) test.c
-	@echo "Compiling: $<"
-	$(CC) -g test.c -I $(INCLUDE) -o $(TESTER) $(NAME)
+	@echo "Compiling: test.c"
+	@$(CC) -g -Wall -Werror -Wextra -Wno-nonnull test.c -I $(INCLUDE) -o $(TESTER) $(NAME)
 	@echo "Running tester"
 	@./$(TESTER)
 
 clean:
-	rm -rf $(OBJ_DIR)
+	@echo "Cleaning object directory"
+	@rm -rf $(OBJ_DIR)
 
 fclean: clean
-	rm -f $(NAME)
-	rm -f $(TESTER)
+	@echo "Cleaning $(NAME)"
+	@rm -f $(NAME)
+	@echo "Cleaning $(TESTER)"
+	@rm -f $(TESTER)
 
 re: fclean all
 
