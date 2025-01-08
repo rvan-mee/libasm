@@ -305,6 +305,20 @@ void test_list_size()
 	printf(GREEN "list_size test successful" RESET "\n\n");
 }
 
+void test_list_push_front()
+{
+	t_list* list_10 = create_list(10);
+	char data_string[] = TEST_STRING;
+
+	ft_list_push_front(&list_10, data_string);
+	assert(ft_list_size(list_10) == 11);
+	assert(strcmp(list_10->data, TEST_STRING) == 0);
+
+	ft_list_push_front(NULL, NULL);
+
+	printf(GREEN "list_push_front test successful" RESET "\n\n");
+}
+
 int main()
 {
 	test_write();
@@ -314,5 +328,6 @@ int main()
 	test_strlen();
 	test_strdup();
 	test_list_size();
+	test_list_push_front();
 	return 0;
 }
