@@ -15,6 +15,7 @@
 #include <assert.h>
 #include <fcntl.h>
 #include <time.h>
+#include <stdarg.h>
 
 #define TEST_STRING "Hello World!\n"
 #define REALLY_LONG_STRING_SIZE (100 * 1024 * 1024)
@@ -36,6 +37,56 @@ int test_syscall(int ret, char *str)
 		printf(RED "syscall failed" RESET " for: %s, reason: %s\n", str, strerror(errno));
 	}
 	return ret;
+}
+
+t_list*	remove_node_and_move_next(t_list* node)
+{
+	t_list* next_node = node->next;
+
+	free(node->data);
+	free(node);
+	return (next_node);
+}
+
+void clear_list(t_list* list)
+{
+	while (list)
+		list = remove_node_and_move_next(list);
+}
+
+t_list*	create_node(int num)
+{
+	t_list*	new_node = malloc(sizeof(t_list));
+	int*	alloced_num = malloc(sizeof(int));
+
+	*alloced_num = num;
+	new_node->data = alloced_num;
+	new_node->next = NULL;
+	return (new_node);
+}
+
+t_list*	create_initialized_list(int arg_count, ...)
+{
+	va_list	args;
+	t_list*	head = NULL;
+	t_list* new_node = NULL;
+
+	va_start(args, arg_count);
+	while (arg_count--)
+	{
+		if (!head)
+		{
+			head = create_node(va_arg(args, int32_t));
+			new_node = head;
+		}
+		else
+		{
+			new_node->next = create_node(va_arg(args, int32_t));
+			new_node = new_node->next;
+		}
+	}
+	va_end(args);
+	return (head);
 }
 
 t_list*	create_list(size_t size)
@@ -69,7 +120,7 @@ void test_write()
 	fflush(stdout);
 	// testing with an allocated string
 	{
-		char *mallocedString = strdup("Hello World\n");
+		char *mallocedString = strdup(TEST_STRING);
 		const int libC = test_syscall(write(STDOUT_FILENO, mallocedString, strlen(mallocedString)), "write");
 		const int libAsm = test_syscall(ft_write(STDOUT_FILENO, mallocedString, strlen(mallocedString)), "ft_write");
 		free(mallocedString);
@@ -90,7 +141,6 @@ void test_write()
 		const int libC = test_syscall(write(STDOUT_FILENO, "", sizeof("")), "write");
 		const int libAsm = test_syscall(ft_write(STDOUT_FILENO, "", sizeof("")), "ft_write");
 		assert(libC == libAsm);
-		printf("\n");
 	}
 
 	// testing with a wrong fd
@@ -108,7 +158,7 @@ void test_write()
 		const int libC = test_syscall(write(STDOUT_FILENO, buf, 1), "write");
 		assert(libC == libAsm);
 	}
-	printf("\n\n");
+	printf("\n");
 }
 
 void test_read()
@@ -130,7 +180,7 @@ void test_read()
 		lseek(read_fd, 0, SEEK_SET);
 		memset(buf, 0, 10);
 		close(read_fd);
-		printf("\n\n");
+		printf("\n");
 	}
 
 	// test invalid fd
@@ -139,7 +189,7 @@ void test_read()
 		const int libAsm = test_syscall(ft_read(read_fd, buf, 9), "ft_read");
 		const int libC = test_syscall(read(read_fd, buf, 9), "read");
 		assert(libAsm == libC);
-		printf("\n\n");
+		printf("\n");
 	}
 
 	// test invalid address
@@ -149,7 +199,7 @@ void test_read()
 		const int libC = test_syscall(read(read_fd, NULL, 9), "read");
 		assert(libAsm == libC);
 		close(read_fd);
-		printf("\n\n");
+		printf("\n");
 	}
 }
 
@@ -177,7 +227,7 @@ void test_strcpy()
 		assert(strcmp(dest, src) == 0);
 	}
 
-	printf(GREEN "strcpy test successful" RESET "\n\n");
+	printf(GREEN "strcpy test successful" RESET "\n");
 }
 
 void test_strcmp()
@@ -206,7 +256,7 @@ void test_strcmp()
 		assert(ft_strcmp(s1, s2) > 0 && strcmp(s1, s2) > 0);
 	}
 
-	printf(GREEN "strcmp test successful" RESET "\n\n");
+	printf(GREEN "strcmp test successful" RESET "\n");
 }
 
 void test_strlen()
@@ -260,11 +310,11 @@ void test_strlen()
 		printf("Benchmarking strlen:\n"
 				"LibC: %f\n"
 				"LibAsm (unoptimized): %f\n"
-				"LibAsm (optimized): %f\n"
-				"\n", time_taken_libC, time_taken_libAsm, time_taken_libAsm_optimized);
+				"LibAsm (optimized): %f\n",
+				time_taken_libC, time_taken_libAsm, time_taken_libAsm_optimized);
 	}
 
-	printf(GREEN "strlen test successful" RESET "\n\n");
+	printf(GREEN "strlen test successful" RESET "\n");
 }
 
 void test_strdup()
@@ -289,7 +339,7 @@ void test_strdup()
 		free(strLibC);
 	}
 
-	printf(GREEN "strdup test successful" RESET "\n\n");
+	printf(GREEN "strdup test successful" RESET "\n");
 }
 
 void test_list_size()
@@ -302,13 +352,17 @@ void test_list_size()
 	assert(ft_list_size(list_10) == 10);
 	assert(ft_list_size(list_0) == 0);
 
-	printf(GREEN "list_size test successful" RESET "\n\n");
+	clear_list(list_20);
+	clear_list(list_10);
+	clear_list(list_0);
+
+	printf(GREEN "list_size test successful" RESET "\n");
 }
 
 void test_list_push_front()
 {
 	t_list* list_10 = create_list(10);
-	char data_string[] = TEST_STRING;
+	char *data_string = strdup(TEST_STRING);
 
 	ft_list_push_front(&list_10, data_string);
 	assert(ft_list_size(list_10) == 11);
@@ -316,7 +370,49 @@ void test_list_push_front()
 
 	ft_list_push_front(NULL, NULL);
 
-	printf(GREEN "list_push_front test successful" RESET "\n\n");
+	clear_list(list_10);
+
+	printf(GREEN "list_push_front test successful" RESET "\n");
+}
+
+int	compare_func(t_list* l1, t_list* l2)
+{
+	if ((*((int*)l1->data)) > (*((int*)l2->data)))
+		return 1;
+	return 0;
+}
+
+void list_sort(t_list** begin_list, int (*compare_func_pointer)(t_list*, t_list*))
+{
+	for (t_list* count = *begin_list; count != NULL; count = count->next)
+	{
+		for(t_list* curr = *begin_list; curr->next != NULL; curr = curr->next)
+		{
+			if(compare_func_pointer(curr, curr->next) > 0)
+			{
+				void *data = curr->data;
+				curr->data = curr->next->data;
+				curr->next->data = data;
+			}
+		}
+	}
+}
+
+void test_list_sort()
+{
+	t_list* list = create_initialized_list(6, 9, 8, 4, 0, 99, 245);
+	t_list* compare_list = create_initialized_list(6, 9, 8, 4, 0, 99, 245);
+
+	list_sort(&compare_list, &compare_func);
+	ft_list_sort(&list, &compare_func);
+
+	while (list && compare_list)
+	{
+		assert(*((int*)list->data) == *((int*)compare_list->data));
+		list = remove_node_and_move_next(list);
+		compare_list = remove_node_and_move_next(compare_list);
+	}
+	printf(GREEN "list_sort test successful" RESET "\n");
 }
 
 int main()
@@ -327,7 +423,9 @@ int main()
 	test_strcmp();
 	test_strlen();
 	test_strdup();
+	printf("\n" BLUE "Testing bonus functions:\n" RESET);
 	test_list_size();
 	test_list_push_front();
+	test_list_sort();
 	return 0;
 }
