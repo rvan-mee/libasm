@@ -375,44 +375,67 @@ void test_list_push_front()
 	printf(GREEN "list_push_front test successful" RESET "\n");
 }
 
-int	compare_func(t_list* l1, t_list* l2)
+int	list_sort_compare_func(int *a, int *b)
 {
-	if ((*((int*)l1->data)) > (*((int*)l2->data)))
-		return 1;
-	return 0;
+  return (*a < *b) - (*b < *a);
 }
 
-void list_sort(t_list** begin_list, int (*compare_func_pointer)(t_list*, t_list*))
+int	list_remove_if_compare_func(int* data, int* data_ref)
 {
-	for (t_list* count = *begin_list; count != NULL; count = count->next)
+	int incoming_data = *data;
+	int comparing_data = *data_ref;
+
+	return (incoming_data != comparing_data); 
+}
+
+void free_func(void* data)
+{
+	free(data);
+}
+
+void sorted_check(t_list* list)
+{
+	while (list && list->next)
 	{
-		for(t_list* curr = *begin_list; curr->next != NULL; curr = curr->next)
-		{
-			if(compare_func_pointer(curr, curr->next) > 0)
-			{
-				void *data = curr->data;
-				curr->data = curr->next->data;
-				curr->next->data = data;
-			}
-		}
+		assert(list_sort_compare_func(list->data, list->next->data) <= 0);
+		list = remove_node_and_move_next(list);
 	}
+	if (list)
+		list = remove_node_and_move_next(list);
 }
 
 void test_list_sort()
 {
-	t_list* list = create_initialized_list(6, 9, 8, 4, 0, 99, 245);
-	t_list* compare_list = create_initialized_list(6, 9, 8, 4, 0, 99, 245);
+	t_list* list = create_initialized_list(11, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, -1);
+	t_list* list2 = create_initialized_list(11, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8 ,9);
 
-	list_sort(&compare_list, &compare_func);
-	ft_list_sort(&list, &compare_func);
+	ft_list_sort(&list, list_sort_compare_func);
+	sorted_check(list);
+	
+	ft_list_sort(&list2, list_sort_compare_func);
+	sorted_check(list2);
 
-	while (list && compare_list)
-	{
-		assert(*((int*)list->data) == *((int*)compare_list->data));
-		list = remove_node_and_move_next(list);
-		compare_list = remove_node_and_move_next(compare_list);
-	}
 	printf(GREEN "list_sort test successful" RESET "\n");
+}
+
+void	test_list_remove_if()
+{
+	t_list*	list = create_initialized_list(6, 0, 1, 0, 1, 0, 1);
+	void* data_ref = malloc(sizeof(int));
+
+	*(int*)data_ref = 1;
+	ft_list_remove_if(&list, data_ref, &list_remove_if_compare_func, &free_func);
+
+	t_list* node = list;
+
+	while (node)
+	{
+		assert((*(int*)node->data) != 1);
+		node = node->next;
+	}
+
+	clear_list(list);
+	printf(GREEN "list_remove_if test successful" RESET "\n");
 }
 
 int main()
@@ -427,5 +450,6 @@ int main()
 	test_list_size();
 	test_list_push_front();
 	test_list_sort();
+	test_list_remove_if();
 	return 0;
 }

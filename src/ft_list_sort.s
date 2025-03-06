@@ -22,7 +22,7 @@ section .text
 ; {
 ;   for(t_list* curr = *begin_list; curr->next != NULL; curr = curr->next)
 ;   {
-;       if(compare(curr, curr->next) > 0)
+;       if(compare(curr->data, curr->next->data) > 0)
 ;           swap_data(curr, curr->next);
 ;   }
 ; }
@@ -48,16 +48,16 @@ ft_list_sort: ; rdi: **begin_list, rsi: *compare_func
     mov r15, [r15+b] ; set the r15 (count) to the next node
     test r15, r15
     jz .end
-    mov r13, r12 ; set current node to the start of the list
+    mov r13, r12 ; reset current node to the start of the list
 
 .sort_loop: ; loop through the entire list calling the compare function and swapping the data when necessary
     mov r14, [r13+b] ; set the next node
     test r14, r14
     jz .move_to_next_iteration
-    mov rdi, r13 ; set current node as argument 1
-    mov rsi, r14 ; set next node as argument 2
+    mov rdi, [r13+a] ; set current node's data as argument 1
+    mov rsi, [r14+a] ; set next node's data as argument 2
     call rbp
-    test rax, rax
+    test eax, eax
     jle .move_to_next__node
     ; if the compare function returns > 0 we have to swap the data 
     mov r8, [r13+a] ; get the data from the current node
