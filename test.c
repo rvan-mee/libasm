@@ -430,10 +430,11 @@ void	test_list_remove_if()
 
 	while (node)
 	{
-		assert((*(int*)node->data) != 1);
+		assert((*(int*)node->data) != *(int *)data_ref);
 		node = node->next;
 	}
 
+	free(data_ref);
 	clear_list(list);
 	printf(GREEN "list_remove_if test successful" RESET "\n");
 }
