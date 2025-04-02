@@ -29,6 +29,9 @@
 #define CYAN        "\x1b[36m"
 #define WHITE       "\x1b[37m"
 
+#define BASE_2_STR "01"
+#define BASE_10_STR "0123456789"
+#define BASE_16_STR "0123456789ABCDEF"
 
 int test_syscall(int ret, char *str)
 {
@@ -439,6 +442,52 @@ void	test_list_remove_if()
 	printf(GREEN "list_remove_if test successful" RESET "\n");
 }
 
+void test_atoi_base()
+{
+	// Whitespace
+	assert(ft_atoi_base("   \t     \n     \r     \v    1", BASE_10_STR) == 1);
+
+	// Base 2
+	assert(ft_atoi_base("0", BASE_2_STR) == 0);
+	assert(ft_atoi_base("1", BASE_2_STR) == 1);
+	assert(ft_atoi_base("-1", BASE_2_STR) == -1);
+	assert(ft_atoi_base("01", BASE_2_STR) == 1);
+	assert(ft_atoi_base("11", BASE_2_STR) == 3);
+	assert((unsigned)ft_atoi_base("11111111", BASE_2_STR) == UINT8_MAX);
+	assert((unsigned)ft_atoi_base("1111111111111111", BASE_2_STR) == UINT16_MAX);
+	assert((unsigned)ft_atoi_base("11111111111111111111111111111111", BASE_2_STR) == UINT32_MAX);
+
+	// Base 10
+	assert(ft_atoi_base("0", BASE_10_STR) == 0);
+	assert(ft_atoi_base("1", BASE_10_STR) == 1);
+	assert(ft_atoi_base("-1", BASE_10_STR) == -1);
+	assert(ft_atoi_base("420", BASE_10_STR) == 420);
+	assert(ft_atoi_base("127", BASE_10_STR) == INT8_MAX);
+	assert(ft_atoi_base("-128", BASE_10_STR) == INT8_MIN);
+	assert(ft_atoi_base("32767", BASE_10_STR) == INT16_MAX);
+	assert(ft_atoi_base("-32768", BASE_10_STR) == INT16_MIN);
+	assert(ft_atoi_base("2147483647", BASE_10_STR) == INT32_MAX);
+	assert(ft_atoi_base("-2147483648", BASE_10_STR) == INT32_MIN);
+
+	// Base 16
+	assert(ft_atoi_base("0", BASE_16_STR) == 0);
+	assert(ft_atoi_base("A", BASE_16_STR) == 10);
+	assert(ft_atoi_base("B", BASE_16_STR) == 11);
+	assert(ft_atoi_base("C", BASE_16_STR) == 12);
+	assert(ft_atoi_base("D", BASE_16_STR) == 13);
+	assert(ft_atoi_base("E", BASE_16_STR) == 14);
+	assert(ft_atoi_base("F", BASE_16_STR) == 15);
+	assert(ft_atoi_base("FF", BASE_16_STR) == 255);
+	assert(ft_atoi_base("FFF", BASE_16_STR) == 4095);
+	assert(ft_atoi_base("FFFF", BASE_16_STR) == 65535);
+	assert(ft_atoi_base("FFFFF", BASE_16_STR) == 1048575);
+	assert(ft_atoi_base("FFFFFF", BASE_16_STR) == 16777215);
+	assert(ft_atoi_base("FFFFFFF", BASE_16_STR) == 268435455);
+	assert(ft_atoi_base("FFFFFFFF", BASE_16_STR) == -1);
+
+	printf(GREEN "atoi_base test successful\n" RESET);
+}
+
 int main()
 {
 	test_write();
@@ -452,5 +501,6 @@ int main()
 	test_list_push_front();
 	test_list_sort();
 	test_list_remove_if();
+	test_atoi_base();
 	return 0;
 }
