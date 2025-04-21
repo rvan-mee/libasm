@@ -67,10 +67,10 @@ ft_strlen: ; rdi: str
 ;
 ; lastly we will have to do an AND operation using the himagic:
 ; "0b00000000 0b00000001 0b11111111 0b00000000"
-; "0b10000000 0b10000000 0b11111111 0b10000000"
+; "0b10000000 0b10000000 0b10000000 0b10000000"
 ; AND
 ; the resulting value will be:
-; "0b00000000 0b00000000 0b11111111 0b00000000"
+; "0b00000000 0b00000000 0b10000000 0b00000000"
 ; the byte containing null will be the only byte left that contains a 1 bit
 
 %define himagic r8
