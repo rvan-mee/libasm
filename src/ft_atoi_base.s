@@ -16,6 +16,7 @@ form_feed       equ 0x0C
 carriage_return equ 0x0D
 space           equ 0x20
 minus           equ 0x2D
+plus            equ 0x2B
 
 global ft_atoi_base
 
@@ -42,6 +43,23 @@ section .text
 ; 	}
 ; }
 ;
+; int skip_sign(const char** str, int* i)
+; {
+;   int sign = 1;
+; 	while (**str)
+; 	{
+; 		if (**str == '-' || **sign == '+')
+; 		{
+; 			*str++;
+; 			if (**str == '-')
+; 				sign = -1;
+; 		}
+; 		else
+; 			return sign;
+; 	}
+; 	return sign;
+; }
+;
 ; int ft_atoi_base(const char *str, char* base_str)
 ; {
 ;   int base = strlen(base_str);
@@ -50,11 +68,7 @@ section .text
 ; 	int sign = 1;
 ;
 ; 	skip_whitespace(&str);
-; 	if (*str == '-')
-; 	{
-; 		sign = -1;
-; 		str++;
-; 	}
+; 	sign = skip_sign(&str);
 ; 	while (*str)
 ; 	{
 ; 		value *= base;
@@ -78,10 +92,7 @@ ft_atoi_base: ; rdi: *str, rsi: *base_str
     cmp byte [rsi + rcx], null_terminator ; current char
     jz .skip_whitespace
     inc rcx
-    jmp .get_base_count
-
-    ; mov	eax,1		; system call number (sys_exit)
-    ; int	0x80	
+    jmp .get_base_count	
 
 .skip_whitespace:
     cmp byte [rdi], space
@@ -96,16 +107,21 @@ ft_atoi_base: ; rdi: *str, rsi: *base_str
     je .loop_whitespace
     cmp byte [rdi], carriage_return
     je .loop_whitespace
-    jmp .check_negative ; no whitespace found
+    jmp .check_minus ; no whitespace found check for sign
 .loop_whitespace:
     inc rdi
     jmp .skip_whitespace
 
-.check_negative:
+.set_negative:
+    neg r8d ; invert the sign
+.skip_sign_loop:
+    inc rdi ; increment the string to skip past the sign
+.check_minus:
     cmp byte [rdi], minus
-    jne .main_loop
-    mov r8d, -1 ; set the sign to -1
-    inc rdi ; increment the string to skip past the minus
+    je .set_negative
+.check_plus:
+    cmp byte [rdi], plus
+    je .skip_sign_loop
 
 .main_loop:
     cmp byte [rdi], null_terminator

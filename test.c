@@ -311,9 +311,9 @@ void test_strlen()
 
 		assert(sizeLibAsm == sizeLibC && sizeLibAsm == sizeLibAsm_optimized);
 		printf("Benchmarking strlen:\n"
-				"LibC: %f\n"
-				"LibAsm (unoptimized): %f\n"
-				"LibAsm (optimized): %f\n",
+			   "LibC:                \t%f\n"
+			   "LibAsm (unoptimized):\t%f\n"
+			   "LibAsm (optimized):  \t%f\n",
 				time_taken_libC, time_taken_libAsm, time_taken_libAsm_optimized);
 	}
 
@@ -472,18 +472,40 @@ void test_atoi_base()
 	// Base 16
 	assert(ft_atoi_base("0", BASE_16_STR) == 0);
 	assert(ft_atoi_base("A", BASE_16_STR) == 10);
+	assert(ft_atoi_base("-A", BASE_16_STR) == -10);
 	assert(ft_atoi_base("B", BASE_16_STR) == 11);
+	assert(ft_atoi_base("-B", BASE_16_STR) == -11);
 	assert(ft_atoi_base("C", BASE_16_STR) == 12);
+	assert(ft_atoi_base("-C", BASE_16_STR) == -12);
 	assert(ft_atoi_base("D", BASE_16_STR) == 13);
+	assert(ft_atoi_base("-D", BASE_16_STR) == -13);
 	assert(ft_atoi_base("E", BASE_16_STR) == 14);
+	assert(ft_atoi_base("-E", BASE_16_STR) == -14);
 	assert(ft_atoi_base("F", BASE_16_STR) == 15);
+	assert(ft_atoi_base("-F", BASE_16_STR) == -15);
+	assert(ft_atoi_base("-F", BASE_16_STR) == -15);
 	assert(ft_atoi_base("FF", BASE_16_STR) == 255);
 	assert(ft_atoi_base("FFF", BASE_16_STR) == 4095);
 	assert(ft_atoi_base("FFFF", BASE_16_STR) == 65535);
 	assert(ft_atoi_base("FFFFF", BASE_16_STR) == 1048575);
 	assert(ft_atoi_base("FFFFFF", BASE_16_STR) == 16777215);
 	assert(ft_atoi_base("FFFFFFF", BASE_16_STR) == 268435455);
-	assert(ft_atoi_base("FFFFFFFF", BASE_16_STR) == -1);
+	assert(ft_atoi_base("7FFFFFFF", BASE_16_STR) == 0x7FFFFFFF);
+	assert(ft_atoi_base("-7FFFFFFF", BASE_16_STR) == -0x7FFFFFFF);
+
+
+	assert(ft_atoi_base("", "") == 0);
+	assert(ft_atoi_base("3", BASE_2_STR) == 0);
+	assert(ft_atoi_base(" 0 1", BASE_2_STR) == 0);
+	assert(ft_atoi_base(" 01", BASE_2_STR) == 1);
+	assert(ft_atoi_base("0", BASE_10_STR) == 0);
+	assert(ft_atoi_base("00", BASE_10_STR) == 0);
+	assert(ft_atoi_base("1", BASE_10_STR) == 1);
+	assert(ft_atoi_base("01", BASE_10_STR) == 1);
+	assert(ft_atoi_base("-1", BASE_10_STR) == -1);
+	assert(ft_atoi_base("--1", BASE_10_STR) == 1);
+	assert(ft_atoi_base("   --2147483647", BASE_10_STR) == 2147483647);
+	assert(ft_atoi_base("---2147483647", BASE_10_STR) == -2147483647);
 
 	printf(GREEN "atoi_base test successful\n" RESET);
 }
